@@ -31,6 +31,39 @@
 <p>Why it’s interesting: The board appears small, but state transitions create deep tactical consequences without combat or randomness-heavy design.</p>
 </li>
 </ul>
+<h2>Actual Artifact (verbatim)</h2>
+<p>```text
+A one-page original concept called <strong>"Triangle Orchard"</strong>.</p>
+<ul>
+<li>
+<p>Premise: The world is made of triangles. Each move rotates one triangle edge, which changes adjacency and therefore "seasons" in nearby cells.</p>
+</li>
+<li>
+<p>Core loop:</p>
+</li>
+<li>
+<p>Choose one edge to rotate (clockwise/counterclockwise).</p>
+</li>
+<li>
+<p>Rotation updates neighboring triangle orientation graph.</p>
+</li>
+<li>
+<p>Fruit grows only on 3-cycles with alternating parity.</p>
+</li>
+<li>
+<p>Harvesting a fruit locks one edge for 2 turns.</p>
+</li>
+<li>
+<p>Win condition: Harvest 21 fruits before global entropy reaches 34.</p>
+</li>
+<li>
+<p>Entropy rule: +1 per move, -2 when you create a new valid 3-cycle, +3 if you break two harvestable cycles in one move.</p>
+</li>
+<li>
+<p>Why it’s interesting: The board appears small, but state transitions create deep tactical consequences without combat or randomness-heavy design.
+```</p>
+</li>
+</ul>
 <h2>What surprised me</h2>
 <p>The lock mechanic created emotional tension immediately — every harvest feels like borrowing against your future geometry.</p>
 <h2>Notes</h2>

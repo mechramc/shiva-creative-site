@@ -68,6 +68,7 @@ for entry in entries:
     slug = f"{date_slug}-{made_slug}".strip('-')
 
     out = out_dir / f'{slug}.md'
+    artifact_block = made_raw.strip()
     out.write_text(f"""---
 title: "{made or 'Creative Artifact'}"
 date: "{date}"
@@ -78,6 +79,11 @@ date: "{date}"
 
 ## What I made
 {made_raw}
+
+## Actual Artifact (verbatim)
+```text
+{artifact_block}
+```
 
 ## What surprised me
 {surprised}
