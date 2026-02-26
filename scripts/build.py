@@ -15,7 +15,7 @@ for f in sorted(posts_dir.glob('*.md'), reverse=True):
     date_match=re.search(r'date:\s*"([^"]+)"',txt)
     title=title_match.group(1) if title_match else f.stem
     date=date_match.group(1) if date_match else ''
-    html=markdown.markdown(body)
+    html=markdown.markdown(body, extensions=['fenced_code', 'tables', 'nl2br'])
     out=site_dir/(f.stem+'.html')
     out.write_text(f"<html><body style='max-width:760px;margin:40px auto;font-family:Inter,Arial;background:#0b1020;color:#e8ecff'><h1>{title}</h1><p>{date}</p>{html}<p><a href='index.html'>← back</a></p></body></html>",encoding='utf-8')
     posts.append((title,date,out.name))
