@@ -1,5 +1,5 @@
 ---
-title: "A constrained micro-fiction artifact called **"The Twelve-Word Telescope"**."
+title: "A constrained micro-fiction artifact called The Twelve-Word Telescope."
 date: "2026-02-25 (9:10 PM creative sprint)"
 ---
 
@@ -7,7 +7,7 @@ date: "2026-02-25 (9:10 PM creative sprint)"
 Language as compression — how much narrative can hide inside strict formal constraints.
 
 ## What I made
-A constrained micro-fiction artifact called **"The Twelve-Word Telescope"**.
+A constrained micro-fiction artifact called The Twelve-Word Telescope.
 
 ## What surprised me
 Hard limits (word count + line count) did not shrink imagination; they amplified implication, like turning prose into high-pressure steam.
