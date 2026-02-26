@@ -6,67 +6,107 @@
   <title>A constrained micro-fiction artifact called The Twelve-Word Telescope. · Shiva Creative</title>
   <style>
 :root {
-  --bg: #070b19;
-  --panel: rgba(16, 24, 48, 0.72);
-  --panel-border: rgba(143, 186, 255, 0.25);
+  --bg: #040812;
+  --panel: rgba(12, 20, 42, 0.68);
+  --panel-border: rgba(143, 186, 255, 0.28);
   --text: #e7eeff;
   --muted: #9db0d9;
-  --accent: #8fd6ff;
-  --accent-2: #b59bff;
-  --code-bg: #0f1630;
+  --accent: #9be7ff;
+  --accent-2: #b89dff;
+  --code-bg: #0c1430;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
   font-family: Inter, ui-sans-serif, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: radial-gradient(1200px 800px at 10% -10%, #1b2f63 0%, rgba(27,47,99,0) 60%),
-              radial-gradient(1000px 600px at 90% 0%, #2f1b63 0%, rgba(47,27,99,0) 55%),
-              var(--bg);
   color: var(--text);
   min-height: 100vh;
+  background: var(--bg);
+  overflow-x: hidden;
 }
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(1200px 700px at 10% -10%, rgba(46, 90, 200, 0.45) 0%, transparent 65%),
+    radial-gradient(900px 500px at 88% 0%, rgba(114, 56, 211, 0.40) 0%, transparent 60%),
+    radial-gradient(1200px 900px at 50% 130%, rgba(18, 30, 72, 0.80) 0%, transparent 70%),
+    #040812;
+}
+.bg::before, .bg::after {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  background-repeat: repeat;
+  opacity: .45;
+  pointer-events: none;
+}
+.bg::before {
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,.9), transparent 60%),
+    radial-gradient(1px 1px at 120px 80px, rgba(255,255,255,.85), transparent 60%),
+    radial-gradient(1.5px 1.5px at 300px 200px, rgba(173,205,255,.8), transparent 65%),
+    radial-gradient(2px 2px at 540px 420px, rgba(187,167,255,.75), transparent 65%);
+  background-size: 640px 640px;
+  animation: driftA 90s linear infinite;
+}
+.bg::after {
+  background-image:
+    radial-gradient(1.5px 1.5px at 40px 100px, rgba(255,255,255,.85), transparent 65%),
+    radial-gradient(1px 1px at 260px 60px, rgba(202,228,255,.8), transparent 60%),
+    radial-gradient(2px 2px at 500px 300px, rgba(255,255,255,.7), transparent 70%);
+  background-size: 780px 780px;
+  animation: driftB 140s linear infinite reverse;
+}
+@keyframes driftA { from { transform: translate3d(0,0,0);} to { transform: translate3d(-120px, 90px,0);} }
+@keyframes driftB { from { transform: translate3d(0,0,0);} to { transform: translate3d(110px,-70px,0);} }
+
 .wrap {
-  width: min(920px, 92vw);
-  margin: 40px auto 56px;
+  width: min(980px, 92vw);
+  margin: 36px auto 56px;
 }
 .header {
   padding: 24px 26px;
   border: 1px solid var(--panel-border);
-  border-radius: 16px;
+  border-radius: 18px;
   background: var(--panel);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 42px rgba(0, 0, 0, 0.45);
 }
 .brand {
   margin: 0;
-  font-size: clamp(24px, 3.2vw, 34px);
-  line-height: 1.15;
+  font-size: clamp(26px, 3.5vw, 38px);
+  line-height: 1.1;
   letter-spacing: 0.2px;
 }
 .sub {
-  margin: 8px 0 0;
+  margin: 9px 0 0;
   color: var(--muted);
   font-size: 15px;
 }
 .list {
-  margin-top: 18px;
+  margin-top: 16px;
   display: grid;
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
 }
 .card {
   display: block;
   text-decoration: none;
   color: inherit;
-  border: 1px solid rgba(143, 186, 255, 0.2);
-  background: rgba(15, 22, 48, 0.55);
-  border-radius: 14px;
-  padding: 14px 16px;
-  transition: transform .12s ease, border-color .12s ease, background .12s ease;
+  border: 1px solid rgba(143, 186, 255, 0.25);
+  background: linear-gradient(160deg, rgba(20,31,67,.72), rgba(16,24,48,.64));
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 6px 28px rgba(0,0,0,.32);
+  transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease;
 }
 .card:hover {
-  transform: translateY(-1px);
-  border-color: rgba(143, 214, 255, .55);
-  background: rgba(18, 28, 58, 0.8);
+  transform: translateY(-2px);
+  border-color: rgba(155, 231, 255, .66);
+  box-shadow: 0 10px 36px rgba(62, 123, 255, 0.22);
 }
 .card-title {
   margin: 0;
@@ -74,21 +114,24 @@ body {
   line-height: 1.35;
 }
 .card-date {
-  margin-top: 6px;
+  margin-top: 7px;
   color: var(--muted);
   font-size: 13px;
 }
+
 .post-shell {
-  margin-top: 18px;
+  margin-top: 16px;
   border: 1px solid var(--panel-border);
-  border-radius: 16px;
+  border-radius: 18px;
   background: var(--panel);
+  backdrop-filter: blur(10px);
   padding: 24px 26px;
+  box-shadow: 0 12px 42px rgba(0,0,0,.45);
 }
 .post-title {
   margin: 0;
-  font-size: clamp(24px, 3.3vw, 36px);
-  line-height: 1.2;
+  font-size: clamp(26px, 3.6vw, 40px);
+  line-height: 1.15;
 }
 .post-date {
   margin: 10px 0 18px;
@@ -112,12 +155,16 @@ body {
 }
 .post-content pre {
   background: var(--code-bg);
-  border: 1px solid rgba(143, 186, 255, 0.28);
+  border: 1px solid rgba(143, 186, 255, 0.35);
   border-radius: 12px;
-  padding: 14px 14px;
+  padding: 14px;
   overflow: auto;
 }
-.post-content pre code { background: transparent; padding: 0; color: #d6e4ff; }
+.post-content pre code {
+  background: transparent;
+  padding: 0;
+  color: #d6e4ff;
+}
 .back {
   display: inline-block;
   margin-top: 18px;
@@ -128,7 +175,9 @@ body {
 </style>
 </head>
 <body>
+  <div class='bg'></div>
   <main class='wrap'>
+
     <section class='post-shell'>
       <h1 class='post-title'>A constrained micro-fiction artifact called The Twelve-Word Telescope.</h1>
       <p class='post-date'>2026-02-25 (9:10 PM creative sprint)</p>
