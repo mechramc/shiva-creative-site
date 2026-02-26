@@ -18,23 +18,50 @@ root = Path(__file__).resolve().parents[1]
 out_dir = root / 'content' / 'posts'
 out_dir.mkdir(parents=True, exist_ok=True)
 
-def grab(label, block):
-    m = re.search(rf"- {re.escape(label)}:\s*(.*)", block)
-    return m.group(1).strip() if m else ''
+def extract_sections(block):
+    labels = ['Date', 'Exploration', 'What I made', 'What surprised me', 'Notes']
+    sections = {k: '' for k in labels}
+    current = None
+    for raw in block.splitlines():
+        line = raw.rstrip('\n')
+        m = re.match(r'^-\s+(Date|Exploration|What I made|What surprised me|Notes):\s*(.*)$', line)
+        if m:
+            current = m.group(1)
+            sections[current] = m.group(2).strip()
+            continue
+        if current and (line.startswith('  ') or line.startswith('\t')):
+            extra = line[2:] if line.startswith('  ') else line.lstrip('\t')
+            sections[current] += ('\n' + extra)
+    return sections
 
 def clean_inline(text):
     # remove markdown markers and quote characters that break frontmatter parsing
     return text.replace('**', '').replace('"', '').strip()
 
+def format_for_markdown(text):
+    if not text:
+        return ''
+    lines = text.splitlines()
+    out = []
+    for i, line in enumerate(lines):
+        if i > 0 and (line.lstrip().startswith('- ') or re.match(r'^\s*\d+\.\s', line)):
+            if out and out[-1].strip() != '':
+                out.append('')
+        out.append(line)
+    return '\n'.join(out)
+
 written = []
 for entry in entries:
-    date = grab('Date', entry) or 'unknown-date'
-    exploration = grab('Exploration', entry)
-    made = clean_inline(grab('What I made', entry))
+    sec = extract_sections(entry)
+    date = sec.get('Date', '').strip() or 'unknown-date'
+    exploration = format_for_markdown(sec.get('Exploration', '').strip())
+    made_raw = format_for_markdown(sec.get('What I made', '').strip())
+    made_title = made_raw.splitlines()[0] if made_raw else ''
+    made = clean_inline(made_title)
     if not made:
         continue
-    surprised = grab('What surprised me', entry)
-    notes = grab('Notes', entry)
+    surprised = format_for_markdown(sec.get('What surprised me', '').strip())
+    notes = format_for_markdown(sec.get('Notes', '').strip())
 
     date_slug = re.sub(r'[^0-9-]+', '-', date).strip('-') or 'date'
     made_slug = re.sub(r'[^a-z0-9]+', '-', made.lower())[:60].strip('-') or 'artifact'
@@ -50,7 +77,7 @@ date: "{date}"
 {exploration}
 
 ## What I made
-{made}
+{made_raw}
 
 ## What surprised me
 {surprised}
