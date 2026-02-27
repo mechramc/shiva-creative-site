@@ -1,0 +1,241 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Echo Life: Experimental Physics</title>
+  <style>
+    body {
+      background: #0a0a0a;
+      color: #00ffcc;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin: 0;
+    }
+    canvas {
+      border: 1px solid #00ffcc;
+      background: #000;
+      box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
+      margin-bottom: 10px;
+      max-width: 100%;
+      height: auto;
+    }
+    .ui-panel {
+      background: #111;
+      border: 1px solid #333;
+      padding: 15px;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: min(700px, 100%);
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex-grow: 1;
+      padding: 0 10px;
+      min-width: 220px;
+    }
+    button {
+      padding: 8px 12px;
+      cursor: pointer;
+      background: #111;
+      color: #00ffcc;
+      border: 1px solid #00ffcc;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #00ffcc;
+      color: #000;
+    }
+    input[type=range] { accent-color: #00ffcc; cursor: pointer; }
+    label { font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; }
+    .obs {
+      margin-top: 14px;
+      width: min(700px, 100%);
+      color: #b9ffe6;
+      line-height: 1.5;
+      font-size: 14px;
+      border-top: 1px solid #1d3a34;
+      padding-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h2>ECHO LIFE // DYNAMICS_LAB</h2>
+  <canvas id="grid" width="700" height="400"></canvas>
+  <div class="ui-panel">
+    <div class="controls">
+      <button onclick="togglePause()" id="pauseBtn">PAUSE</button>
+      <button onclick="toggleView()" id="viewBtn">VIEW: STANDARD</button>
+      <button onclick="spawnArtifact()">RESET SEED</button>
+      <div class="slider-group">
+        <label id="decayLabel">Ghost Persistence: 2 ticks</label>
+        <input type="range" id="decaySlider" min="1" max="10" value="2" oninput="updateDecay(this.value)">
+      </div>
+      <button onclick="reset()" style="border-color: #ff3300; color: #ff3300;">WIPE</button>
+    </div>
+  </div>
+
+  <div class="obs">
+    <strong>Observations</strong><br>
+    • <em>Viscosity Threshold</em>: At persistence 2–3, the glider bifurcates and the resulting patterns escape each other.<br>
+    • <em>Collapse Threshold</em>: At persistence 5+, the trail becomes dense enough that patterns trip on their own echo and collapse into static or noisy states.
+  </div>
+
+  <script>
+    const canvas = document.getElementById('grid');
+    const ctx = canvas.getContext('2d');
+    const res = 10;
+    const COLS = canvas.width / res;
+    const ROWS = canvas.height / res;
+
+    let grid = createGrid();
+    let paused = false;
+    let viewMode = 'standard';
+    let maxEcho = 2;
+
+    function createGrid() {
+      return Array.from({ length: COLS }, () =>
+        Array.from({ length: ROWS }, () => ({ state: 0, echo: 0, lastI: 0 }))
+      );
+    }
+
+    function updateDecay(val) {
+      maxEcho = parseInt(val);
+      document.getElementById('decayLabel').innerText = `Ghost Persistence: ${val} ticks`;
+    }
+
+    function spawnArtifact() {
+      grid = createGrid();
+      const x = Math.floor(COLS / 3);
+      const y = Math.floor(ROWS / 2);
+      // Glider
+      grid[x][y].state = 1;
+      grid[x + 1][y + 1].state = 1;
+      grid[x + 2][y + 1].state = 1;
+      grid[x][y + 2].state = 1;
+      grid[x + 1][y + 2].state = 1;
+      // Trailing cell
+      grid[x - 2][y - 1].state = 1;
+      render();
+    }
+
+    function update() {
+      if (paused) return;
+      const nextGrid = createGrid();
+      for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+          const neighbors = getNeighbors(i, j);
+          const L = neighbors.live;
+          const E = neighbors.echoSum;
+          const I = L + (0.5 * E);
+
+          const cell = grid[i][j];
+          const next = nextGrid[i][j];
+          next.lastI = I;
+
+          if (cell.state === 1) {
+            if (L === 2 || L === 3) {
+              next.state = 1;
+              next.echo = Math.max(0, cell.echo - 1);
+            } else {
+              next.state = 0;
+              next.echo = maxEcho;
+            }
+          } else {
+            if (I === 3) {
+              next.state = 1;
+              next.echo = maxEcho;
+            } else {
+              next.echo = Math.max(0, cell.echo - 1);
+            }
+          }
+        }
+      }
+      grid = nextGrid;
+    }
+
+    function getNeighbors(x, y) {
+      let live = 0, echoSum = 0;
+      for (let i = -1; i < 2; i++) {
+        for (let j = -1; j < 2; j++) {
+          if (i === 0 && j === 0) continue;
+          const col = (x + i + COLS) % COLS;
+          const row = (y + j + ROWS) % ROWS;
+          if (grid[col][row].state === 1) live++;
+          if (grid[col][row].echo > 0) echoSum++;
+        }
+      }
+      return { live, echoSum };
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < COLS; i++) {
+        for (let j = 0; j < ROWS; j++) {
+          const cell = grid[i][j];
+          const x = i * res;
+          const y = j * res;
+
+          if (viewMode === 'heatmap') {
+            if (cell.state === 1) {
+              ctx.fillStyle = '#fff';
+            } else {
+              const intensity = Math.min(cell.lastI / 3, 1);
+              ctx.fillStyle = cell.lastI >= 3 ? '#ff3300' : `rgba(0, 255, 204, ${intensity * 0.3})`;
+            }
+          } else {
+            if (cell.state === 1) {
+              ctx.fillStyle = '#00ffcc';
+            } else if (cell.echo > 0) {
+              const alpha = cell.echo / maxEcho;
+              ctx.fillStyle = `rgba(138, 43, 226, ${alpha})`;
+            } else {
+              continue;
+            }
+          }
+
+          ctx.fillRect(x, y, res - 1, res - 1);
+        }
+      }
+    }
+
+    function loop() {
+      update();
+      render();
+      setTimeout(() => requestAnimationFrame(loop), 80);
+    }
+
+    function toggleView() {
+      viewMode = viewMode === 'standard' ? 'heatmap' : 'standard';
+      document.getElementById('viewBtn').innerText = `VIEW: ${viewMode.toUpperCase()}`;
+    }
+
+    function togglePause() {
+      paused = !paused;
+      document.getElementById('pauseBtn').innerText = paused ? 'RESUME' : 'PAUSE';
+    }
+
+    function reset() {
+      grid = createGrid();
+      render();
+    }
+
+    spawnArtifact();
+    loop();
+  </script>
+</body>
+</html>
