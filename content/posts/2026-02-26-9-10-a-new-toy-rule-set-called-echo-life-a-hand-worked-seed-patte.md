@@ -43,13 +43,6 @@ A new toy rule set called **"Echo Life"** + a hand-worked seed pattern.
 
   4. Decay all echoes.
 
-## Interactive Artifact
-Try the live simulator with persistence slider:
-
-- [Open Echo Life Dynamics Lab](echo-life-sim.html)
-
-<iframe src="echo-life-sim.html" title="Echo Life Dynamics Lab" width="100%" height="720" style="border:1px solid rgba(143,186,255,0.35); border-radius:12px; background:#050910;"></iframe>
-
 ## Actual Artifact (verbatim)
 ```text
 A new toy rule set called **"Echo Life"** + a hand-worked seed pattern.
